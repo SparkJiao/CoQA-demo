@@ -14,7 +14,7 @@ from allennlp.data.tokenizers import Token, Tokenizer, WordTokenizer
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-@DatasetReader.register("quac")
+@DatasetReader.register("coqa")
 class QuACReader(DatasetReader):
     """
     Reads a JSON-formatted Quesiton Answering in Context (QuAC) data file
