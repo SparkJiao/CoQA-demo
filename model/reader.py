@@ -92,23 +92,31 @@ class QuACReader(DatasetReader):
             answers = article['answers']
             additional_answers = []
             additional_answers.insert(0, answers)
-            metadata={}
+            metadata = {}
             metadata['instance_id'] = [question['turn_id'] for question in questions]
             question_text_list = [question['input_text'].strip().replace("\n", "") for question in questions]
             answer_texts_list = [[answer['span_text'] for answer in ads] for ads in additional_answers]
             span_starts_list = [[answer['span_start'] for answer in ads] for ads in additional_answers]
             span_ends_list = [[answer['span_end'] for answer in ads] for ads in additional_answers]
 
-            for answers_list, spans_starts, spans_ends in zip(answer_texts_list, span_starts_list, span_ends_list):
-                for answer, span_start, span_end in zip(answers_list, spans_starts, spans_ends):
+            # for answers_list, spans_starts, spans_ends in zip(answer_texts_list, span_starts_list, span_ends_list):
+            #     for answer, span_start, span_end in zip(answers_list, spans_starts, spans_ends):
+            #         if answer.lower() == 'unknown':
+            #             answer = 'CANNOTANSWER'
+            #             span_start = 2024
+            #             span_end = 2036
+
+            for i in range(len(answer_texts_list)):
+                for j, answer in enumerate(answer_texts_list[i]):
                     if answer.lower() == 'unknown':
-                        answer = 'CANNOTANSWER'
-                        span_start = 2024
-                        span_end = 2036
+                        answer_texts_list[i][j] = 'CANNOTANSWER'
+                        span_starts_list[i][j] = 2024
+                        span_ends_list[i][j] = 2036
 
             metadata['question'] = question_text_list
             metadata['answer_texts_list'] = answer_texts_list
             yesno_list = []
+            followup_list = []
             for answer in answers:
                 if answer['input_text'].lower() == 'no':
                     yesno_list.append('n')
@@ -117,7 +125,7 @@ class QuACReader(DatasetReader):
                 else:
                     yesno_list.append('x')
 
-            followup_list = {}
+
             instance = self.text_to_instance(question_text_list,
                                              paragraph,
                                              span_starts_list,
