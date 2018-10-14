@@ -94,7 +94,7 @@ class QuACReader(DatasetReader):
             additional_answers.insert(0, answers)
             metadata={}
             metadata['instance_id'] = [question['turn_id'] for question in questions]
-            question_text_list = [question['question'].strip().replace("\n", "") for question in questions]
+            question_text_list = [question['input_text'].strip().replace("\n", "") for question in questions]
             answer_texts_list = [[answer['span_text'] for answer in ads] for ads in additional_answers]
             span_starts_list = [[answer['span_start'] for answer in ads] for ads in additional_answers]
             span_ends_list = [[answer['span_end'] for answer in ads] for ads in additional_answers]
