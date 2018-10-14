@@ -90,7 +90,7 @@ class QuACReader(DatasetReader):
             tokenized_paragraph = self._tokenizer.tokenize(paragraph)
             questions = article['questions']
             answers = article['answers']
-            additional_answers = article['additional_answers']
+            additional_answers = []
             additional_answers.insert(0, answers)
             metadata={}
             metadata['instance_id'] = [question['turn_id'] for question in questions]
