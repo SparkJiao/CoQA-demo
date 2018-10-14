@@ -78,12 +78,12 @@ class SquadReader(DatasetReader):
             for question_answer in paragraph_json['questions']:
                 question_text = question_answer["input_text"].strip().replace("\n", "")
                 answer_texts = []
-                answer_texts.append(paragraph_json["answers"][ind]['span_text'])
+                answer_texts.append(paragraph_json["answers"][ind]['span_text'].replace("\n", ""))
                 # answer_texts = [answer['text'] for answer in question_answer['answers']]
                 span_starts = []
                 span_starts.append(paragraph_json["answers"][ind]['span_start'])
                 span_ends = []
-                span_ends.append(paragraph_json["answers"][ind]['span_end'])
+                span_ends.append(paragraph_json["answers"][ind]['span_start'] + len(paragraph_json["answers"][ind]['span_text'].replace("\n", "")))
                 # span_starts = [answer['answer_start'] for answer in question_answer['answers']]
                 # span_ends = [start + len(answer) for start, answer in zip(span_starts, answer_texts)]
 
