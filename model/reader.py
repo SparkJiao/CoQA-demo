@@ -107,8 +107,8 @@ class QuACReader(DatasetReader):
             #             span_end = 2036
 
             for i in range(len(answer_texts_list)):
-                for j, answer in enumerate(answer_texts_list[i]):
-                    if answer.lower() == 'unknown':
+                for j in range(len(answer_texts_list[i])):
+                    if answer_texts_list[i][j].lower() == 'unknown':
                         answer_texts_list[i][j] = 'CANNOTANSWER'
                         span_starts_list[i][j] = 2024
                         span_ends_list[i][j] = 2036

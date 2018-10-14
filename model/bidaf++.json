@@ -1,6 +1,6 @@
 {
   "dataset_reader": {
-    "type": "coqa",
+    "type": "squad",
     "lazy": true,
     "num_context_answers": 2,
     "token_indexers": {
