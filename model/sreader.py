@@ -14,7 +14,7 @@ from allennlp.data.tokenizers import Token, Tokenizer, WordTokenizer
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-@DatasetReader.register("squad")
+@DatasetReader.register("coqa-squad")
 class SquadReader(DatasetReader):
     """
     Reads a JSON-formatted SQuAD file and returns a ``Dataset`` where the ``Instances`` have four
