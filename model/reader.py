@@ -124,7 +124,7 @@ class QuACReader(DatasetReader):
                                              span_ends_list,
                                              tokenized_paragraph,
                                              yesno_list,
-                                             followup_list,
+                                             None,
                                              metadata)
             yield instance
 
