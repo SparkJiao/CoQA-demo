@@ -71,7 +71,7 @@ class SquadReader(DatasetReader):
         #             yield instance
 
         for paragraph_json in dataset:
-            paragraph = paragraph_json["story"]
+            paragraph = paragraph_json["story"].strip().replace("\n", "")
             tokenized_paragraph = self._tokenizer.tokenize(paragraph)
 
             ind = 0
@@ -79,13 +79,8 @@ class SquadReader(DatasetReader):
                 question_text = question_answer["input_text"].strip().replace("\n", "")
                 answer_texts = []
 
-                tmp = paragraph_json["answers"][ind]['span_text'].replace("\n", "")
-                before = 0
-                for i in range(len(tmp)):
-                    if tmp[i] == ' ':
-                        before += 1
-                    else:
-                        break
+                tmp = paragraph_json["answers"][ind]['span_text']
+                before = self.get_front_blanks(tmp)
                 answer = paragraph_json["answers"][ind]['span_text'].strip().replace("\n", "")
                 start = paragraph_json["answers"][ind]['span_start'] + before
                 end = start + len(answer)
@@ -93,13 +88,26 @@ class SquadReader(DatasetReader):
                 answer_texts.append(answer)
                 # answer_texts = [answer['text'] for answer in question_answer['answers']]
 
-                span_starts = []
+                span_starts = list()
                 span_starts.append(start)
 
-                span_ends = []
+                span_ends = list()
                 span_ends.append(end)
                 # span_starts = [answer['answer_start'] for answer in question_answer['answers']]
                 # span_ends = [start + len(answer) for start, answer in zip(span_starts, answer_texts)]
+
+                if "additional_answers" in paragraph_json:
+                    additional_answers = paragraph_json["additional_answers"]
+                    for key in additional_answers:
+                        tmp = additional_answers[key][ind]["span_text"]
+                        answer = tmp.strip().replace("\n", "")
+                        before = self.get_front_blanks(tmp)
+                        start = additional_answers[key][ind]["span_start"] + before
+                        end = start + len(answer)
+                        answer_texts.append(answer)
+                        span_starts.append(start)
+                        span_ends.append(end)
+
 
                 ind += 1
 
@@ -109,6 +117,16 @@ class SquadReader(DatasetReader):
                                                  answer_texts,
                                                  tokenized_paragraph)
                 yield instance
+
+    def get_front_blanks(self, answer):
+        answer = answer.replace("\n", "")
+        before = 0
+        for i in range(len(answer)):
+            if answer[i] == ' ':
+                before += 1
+            else:
+                break
+        return before
 
     @overrides
     def text_to_instance(self,  # type: ignore
