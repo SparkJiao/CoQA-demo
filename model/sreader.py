@@ -71,13 +71,14 @@ class SquadReader(DatasetReader):
         #             yield instance
 
         for paragraph_json in dataset:
-            paragraph = paragraph_json["story"].strip().replace("\n", "")
+            paragraph = paragraph_json["story"]
+            # paragraph = paragraph_json["story"].strip().replace("\n", "")
             tokenized_paragraph = self._tokenizer.tokenize(paragraph)
 
             ind = 0
             for question_answer in paragraph_json['questions']:
-                # question_text = question_answer["input_text"].strip().replace("\n", "")
-                question_text = question_answer["input_text"].replace("\n", "")
+                question_text = question_answer["input_text"].strip().replace("\n", "")
+                # question_text = question_answer["input_text"].replace("\n", "")
                 answer_texts = []
 
                 tmp = paragraph_json["answers"][ind]['span_text']
