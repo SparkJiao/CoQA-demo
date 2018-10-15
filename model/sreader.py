@@ -76,7 +76,8 @@ class SquadReader(DatasetReader):
 
             ind = 0
             for question_answer in paragraph_json['questions']:
-                question_text = question_answer["input_text"].strip().replace("\n", "")
+                # question_text = question_answer["input_text"].strip().replace("\n", "")
+                question_text = question_answer["input_text"].replace("\n", "")
                 answer_texts = []
 
                 tmp = paragraph_json["answers"][ind]['span_text']
