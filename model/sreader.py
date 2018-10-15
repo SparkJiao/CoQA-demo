@@ -96,17 +96,17 @@ class SquadReader(DatasetReader):
                 # span_starts = [answer['answer_start'] for answer in question_answer['answers']]
                 # span_ends = [start + len(answer) for start, answer in zip(span_starts, answer_texts)]
 
-                if "additional_answers" in paragraph_json:
-                    additional_answers = paragraph_json["additional_answers"]
-                    for key in additional_answers:
-                        tmp = additional_answers[key][ind]["span_text"]
-                        answer = tmp.strip().replace("\n", "")
-                        before = self.get_front_blanks(tmp)
-                        start = additional_answers[key][ind]["span_start"] + before
-                        end = start + len(answer)
-                        answer_texts.append(answer)
-                        span_starts.append(start)
-                        span_ends.append(end)
+                # if "additional_answers" in paragraph_json:
+                #     additional_answers = paragraph_json["additional_answers"]
+                #     for key in additional_answers:
+                #         tmp = additional_answers[key][ind]["span_text"]
+                #         answer = tmp.strip().replace("\n", "")
+                #         before = self.get_front_blanks(tmp)
+                #         start = additional_answers[key][ind]["span_start"] + before
+                #         end = start + len(answer)
+                #         answer_texts.append(answer)
+                #         span_starts.append(start)
+                #         span_ends.append(end)
 
 
                 ind += 1
