@@ -12,7 +12,7 @@ with open('coqa-train-v1.0.json', 'r') as coqa_train:
         questions = data["questions"]
         answer = data["answers"]
 
-        for i in range(questions):
+        for i in range(len(questions)):
             answers = list()
             question = questions[i]["input_text"]
             answer_item = {"answer_start": answer[i]["span_start"], "text": answer[i]["span_text"]}
