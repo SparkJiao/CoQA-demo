@@ -1,6 +1,6 @@
 import json
 
-with open('https://nlp.stanford.edu/data/coqa/coqa-train-v1.0.json', 'r') as coqa_train:
+with open('coqa-train-v1.0.json', 'r') as coqa_train:
     source = json.load(coqa_train)
     dataset = source['data']
 
@@ -37,7 +37,7 @@ with open('https://nlp.stanford.edu/data/coqa/coqa-train-v1.0.json', 'r') as coq
         json.dump(data, file, indent=4)
 
 
-with open('https://nlp.stanford.edu/data/coqa/coqa-dev-v1.0.json', 'r') as coqa_train:
+with open('coqa-dev-v1.0.json', 'r') as coqa_train:
     source = json.load(coqa_train)
     dataset = source['data']
 
