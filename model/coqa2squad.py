@@ -21,7 +21,8 @@ with open('coqa-train-v1.0.json', 'r') as coqa_train:
             if "additional_answers" in data:
                 additional_answers = data["additional_answers"]
                 for index in additional_answers:
-                    answer_item = {"answer_start":additional_answers[index][i]["span_start"], "text": additional_answers[index][i]["span_text"]}
+                    answer_item = {"answer_start": additional_answers[index][i]["span_start"],
+                                   "text": additional_answers[index][i]["span_text"]}
                     answers.append(answer_item)
 
             qas_item = {"answers": answers, "question": question, "id": questions[i]["turn_id"]}
@@ -30,12 +31,11 @@ with open('coqa-train-v1.0.json', 'r') as coqa_train:
         paragraph_item = {"context": context, "qas": qas}
         paragraph.append(paragraph_item)
 
-    data = list()
-    data.append({"title": title, "paragraphs": paragraph})
+    data = dict()
+    data["data"] = [{"title": title, "paragraphs": paragraph}]
 
     with open('squad-train.json', 'w') as file:
         json.dump(data, file, indent=4)
-
 
 with open('coqa-dev-v1.0.json', 'r') as coqa_train:
     source = json.load(coqa_train)
@@ -58,7 +58,8 @@ with open('coqa-dev-v1.0.json', 'r') as coqa_train:
             if "additional_answers" in data:
                 additional_answers = data["additional_answers"]
                 for index in additional_answers:
-                    answer_item = {"answer_start":additional_answers[index][i]["span_start"], "text": additional_answers[index][i]["span_text"]}
+                    answer_item = {"answer_start": additional_answers[index][i]["span_start"],
+                                   "text": additional_answers[index][i]["span_text"]}
                     answers.append(answer_item)
 
             qas_item = {"answers": answers, "question": question, "id": questions[i]["turn_id"]}
@@ -67,8 +68,8 @@ with open('coqa-dev-v1.0.json', 'r') as coqa_train:
         paragraph_item = {"context": context, "qas": qas}
         paragraph.append(paragraph_item)
 
-    data = list()
-    data.append({"title": title, "paragraphs": paragraph})
+    data = dict()
+    data["data"] = [{"title": title, "paragraphs": paragraph}]
 
     with open('squad-dev.json', 'w') as file:
         json.dump(data, file, indent=4)
