@@ -73,7 +73,9 @@ class SquadReader(DatasetReader):
         for paragraph_json in dataset:
             paragraph = paragraph_json["story"]
             # paragraph = paragraph_json["story"].strip().replace("\n", "")
-            tokenized_paragraph = self._tokenizer.tokenize(paragraph)
+            n_paragraph, padding = self.delete_leading_tokens_of_paragraph(paragraph)
+            # tokenized_paragraph = self._tokenizer.tokenize(paragraph)
+            tokenized_paragraph = self._tokenizer.tokenize(n_paragraph)
 
             ind = 0
             for question_answer in paragraph_json['questions']:
@@ -82,7 +84,7 @@ class SquadReader(DatasetReader):
                 answer_texts = []
 
                 tmp = paragraph_json["answers"][ind]['span_text']
-                before = self.get_front_blanks(tmp)
+                before = self.get_front_blanks(tmp, padding)
                 answer = paragraph_json["answers"][ind]['span_text'].strip().replace("\n", "")
                 start = paragraph_json["answers"][ind]['span_start'] + before
                 end = start + len(answer)
@@ -103,7 +105,7 @@ class SquadReader(DatasetReader):
                 #     for key in additional_answers:
                 #         tmp = additional_answers[key][ind]["span_text"]
                 #         answer = tmp.strip().replace("\n", "")
-                #         before = self.get_front_blanks(tmp)
+                #         before = self.get_front_blanks(tmp, padding)
                 #         start = additional_answers[key][ind]["span_start"] + before
                 #         end = start + len(answer)
                 #         answer_texts.append(answer)
@@ -120,7 +122,7 @@ class SquadReader(DatasetReader):
                                                  tokenized_paragraph)
                 yield instance
 
-    def get_front_blanks(self, answer):
+    def get_front_blanks(self, answer, padding):
         answer = answer.replace("\n", "")
         before = 0
         for i in range(len(answer)):
@@ -128,7 +130,18 @@ class SquadReader(DatasetReader):
                 before += 1
             else:
                 break
-        return before
+        return before - padding
+
+    def delete_leading_tokens_of_paragraph(self, paragraph):
+        before = 0
+        for i in range(len(paragraph)):
+            if paragraph[i] == ' ' or paragraph[i] == '\n':
+                before += 1
+            else:
+                break
+
+        nparagraph = paragraph[before:]
+        return nparagraph, before
 
     @overrides
     def text_to_instance(self,  # type: ignore
