@@ -11,7 +11,11 @@ from allennlp.data.dataset_readers.reading_comprehension import util
 from allennlp.data.token_indexers import SingleIdTokenIndexer, TokenIndexer
 from allennlp.data.tokenizers import Token, Tokenizer, WordTokenizer
 
+# from allennlp import commands
+
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+#
+# commands.main()
 
 
 @DatasetReader.register("coqa-squad")
@@ -89,6 +93,12 @@ class SquadReader(DatasetReader):
                 start = paragraph_json["answers"][ind]['span_start'] + before
                 end = start + len(answer)
 
+                # debug 10.15 21:20
+                if answer.lower() == "unknown":
+                    answer = n_paragraph[0]
+                    start = 0
+                    end = 0
+
                 answer_texts.append(answer)
                 # answer_texts = [answer['text'] for answer in question_answer['answers']]
 
@@ -108,6 +118,13 @@ class SquadReader(DatasetReader):
                         before = self.get_front_blanks(tmp, padding)
                         start = additional_answers[key][ind]["span_start"] + before
                         end = start + len(answer)
+
+                        # debug 10.15 21:20
+                        if answer.lower() == "unknown":
+                            answer = n_paragraph[0]
+                            start = 0
+                            end = 0
+
                         answer_texts.append(answer)
                         span_starts.append(start)
                         span_ends.append(end)
