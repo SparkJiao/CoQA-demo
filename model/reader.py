@@ -87,44 +87,66 @@ class QuACReader(DatasetReader):
 
         for article in dataset:
             paragraph = article['story']
-            tokenized_paragraph = self._tokenizer.tokenize(paragraph)
-            questions = article['questions']
-            answers = article['answers']
-            additional_answers = []
-            additional_answers.insert(0, answers)
-            metadata = {}
+            n_paragraph, padding = self.delete_leading_tokens_of_paragraph(paragraph)
+            tokenized_paragraph = self._tokenizer.tokenize(n_paragraph)
+            paragraph_length = len(n_paragraph) + 1
+            questions = article['questions'] + " Unknown"
+            metadata = dict()
             metadata['instance_id'] = [question['turn_id'] for question in questions]
             question_text_list = [question['input_text'].strip().replace("\n", "") for question in questions]
-            answer_texts_list = [[answer['span_text'] for answer in ads] for ads in additional_answers]
-            span_starts_list = [[answer['span_start'] for answer in ads] for ads in additional_answers]
-            span_ends_list = [[answer['span_end'] for answer in ads] for ads in additional_answers]
 
-            # for answers_list, spans_starts, spans_ends in zip(answer_texts_list, span_starts_list, span_ends_list):
-            #     for answer, span_start, span_end in zip(answers_list, spans_starts, spans_ends):
-            #         if answer.lower() == 'unknown':
-            #             answer = 'CANNOTANSWER'
-            #             span_start = 2024
-            #             span_end = 2036
+            answer_texts_list = list()
+            span_starts_list = list()
+            span_ends_list = list()
+            yesno_list = list()
+            followup_list = list()
+            answers = article["answers"]
+            i = 0
+            for answer in answers:
 
-            for i in range(len(answer_texts_list)):
-                for j in range(len(answer_texts_list[i])):
-                    if answer_texts_list[i][j].lower() == 'unknown':
-                        answer_texts_list[i][j] = 'CANNOTANSWER'
-                        span_starts_list[i][j] = 2024
-                        span_ends_list[i][j] = 2036
+                answer_text_list = list()
+                span_start_list = list()
+                span_end_list = list()
+
+                tmp = answer["span_text"]
+                before = self.get_front_blanks(tmp, padding)
+                answer_text = answer["span_text"].strip().replace("\n", "")
+
+                span_start, span_end, yesno = self.deal_answer(answer_text, answer["span_start"], answer["input_text"],
+                                                               paragraph_length, before)
+
+                answer_text_list.append(answer_text)
+                span_start_list.append(span_start)
+                span_end_list.append(span_end)
+
+                if "additional_answers" in article:
+                    additional_answers = article["additional_answers"]
+                    for index in additional_answers:
+                        tmp = additional_answers[index][i]["span_text"]
+                        before = self.get_front_blanks(tmp, padding)
+                        answer_text = additional_answers[index][i]["span_text"].strip().replace("\n", "")
+
+                        span_start, span_end, yesno = self.deal_answer(answer_text, answer["span_start"],
+                                                                       answer["input_text"], paragraph_length, before)
+
+                        answer_text_list.append(answer_text)
+                        span_start_list.append(span_start)
+                        span_end_list.append(span_end)
+
+                yesno_list.append(yesno)
+                if i == len(answers) - 1:
+                    followup_list.append("n")
+                else:
+                    followup_list.append("y")
+
+                i += 1
+
+                answer_texts_list.append(answer_text_list)
+                span_starts_list.append(span_start_list)
+                span_ends_list.append(span_end_list)
 
             metadata['question'] = question_text_list
             metadata['answer_texts_list'] = answer_texts_list
-            yesno_list = []
-            followup_list = []
-            for answer in answers:
-                if answer['input_text'].lower() == 'no':
-                    yesno_list.append('n')
-                elif answer['input_text'].lower() == 'yes':
-                    yesno_list.append('y')
-                else:
-                    yesno_list.append('x')
-
 
             instance = self.text_to_instance(question_text_list,
                                              paragraph,
@@ -132,9 +154,47 @@ class QuACReader(DatasetReader):
                                              span_ends_list,
                                              tokenized_paragraph,
                                              yesno_list,
-                                             None,
+                                             followup_list,
                                              metadata)
             yield instance
+
+    def deal_answer(self, answer_text, answer_span_start, answer_input_text, paragraph_length, before):
+        if answer_text.lower() == "unknown":
+            span_start = paragraph_length
+            span_end = span_start + len("Unknown")
+            yesno = "x"
+        else:
+            span_start = answer_span_start + before
+            span_end = span_start + len(answer_text)
+            if answer_input_text.lower() == "yes":
+                yesno = "y"
+            elif answer_input_text.lower() == "no":
+                yesno = "n"
+            else:
+                yesno = "x"
+
+        return span_start, span_end, yesno
+
+    def get_front_blanks(self, answer, padding):
+        answer = answer.replace("\n", "")
+        before = 0
+        for i in range(len(answer)):
+            if answer[i] == ' ':
+                before += 1
+            else:
+                break
+        return before - padding
+
+    def delete_leading_tokens_of_paragraph(self, paragraph):
+        before = 0
+        for i in range(len(paragraph)):
+            if paragraph[i] == ' ' or paragraph[i] == '\n':
+                before += 1
+            else:
+                break
+
+        nparagraph = paragraph[before:]
+        return nparagraph, before
 
     @overrides
     def text_to_instance(self,  # type: ignore
