@@ -88,9 +88,10 @@ class QuACReader(DatasetReader):
         for article in dataset:
             paragraph = article['story']
             n_paragraph, padding = self.delete_leading_tokens_of_paragraph(paragraph)
-            tokenized_paragraph = self._tokenizer.tokenize(n_paragraph)
             paragraph_length = len(n_paragraph) + 1
-            questions = article['questions'] + " Unknown"
+            n_paragraph += " Unknown"
+            tokenized_paragraph = self._tokenizer.tokenize(n_paragraph)
+            questions = article['questions']
             metadata = dict()
             metadata['instance_id'] = [question['turn_id'] for question in questions]
             question_text_list = [question['input_text'].strip().replace("\n", "") for question in questions]
