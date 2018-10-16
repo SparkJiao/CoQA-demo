@@ -81,7 +81,7 @@ class QuACReader(DatasetReader):
         #                                          span_ends_list,
         #                                          tokenized_paragraph,
         #                                          yesno_list,
-        #                                          followup_list,
+        #                                          followup_list,x
         #                                          metadata)
         #         yield instance
 
@@ -89,7 +89,7 @@ class QuACReader(DatasetReader):
             paragraph = article['story']
             n_paragraph, padding = self.delete_leading_tokens_of_paragraph(paragraph)
             paragraph_length = len(n_paragraph) + 1
-            n_paragraph += " Unknown"
+            # n_paragraph += " CANNOTANSWER"
             tokenized_paragraph = self._tokenizer.tokenize(n_paragraph)
             questions = article['questions']
             metadata = dict()
@@ -116,6 +116,10 @@ class QuACReader(DatasetReader):
                 span_start, span_end, yesno = self.deal_answer(answer_text, answer["span_start"], answer["input_text"],
                                                                paragraph_length, before)
 
+                if answer_text.lower() == "unknown":
+                    # answer_text = "CANNOTANSWER"
+                    answer_text = n_paragraph[0]
+
                 answer_text_list.append(answer_text)
                 span_start_list.append(span_start)
                 span_end_list.append(span_end)
@@ -127,8 +131,14 @@ class QuACReader(DatasetReader):
                         before = self.get_front_blanks(tmp, padding)
                         answer_text = additional_answers[index][i]["span_text"].strip().replace("\n", "")
 
-                        span_start, span_end, yesno = self.deal_answer(answer_text, answer["span_start"],
-                                                                       answer["input_text"], paragraph_length, before)
+                        span_start, span_end, yesno = self.deal_answer(answer_text,
+                                                                       additional_answers[index][i]["span_start"],
+                                                                       additional_answers[index][i]["input_text"],
+                                                                       paragraph_length, before)
+
+                        if answer_text.lower() == "unknown":
+                            # answer_text = "CANNOTANSWER"
+                            answer_text = n_paragraph[0]
 
                         answer_text_list.append(answer_text)
                         span_start_list.append(span_start)
@@ -148,6 +158,7 @@ class QuACReader(DatasetReader):
 
             metadata['question'] = question_text_list
             metadata['answer_texts_list'] = answer_texts_list
+            # metadata['span_starts_list'] = span_starts_list
 
             instance = self.text_to_instance(question_text_list,
                                              paragraph,
@@ -161,8 +172,9 @@ class QuACReader(DatasetReader):
 
     def deal_answer(self, answer_text, answer_span_start, answer_input_text, paragraph_length, before):
         if answer_text.lower() == "unknown":
-            span_start = paragraph_length
-            span_end = span_start + len("Unknown")
+            # span_start = paragraph_length
+            # span_end = span_start + len("CANNOTANSWER")
+            span_start = span_end = 0
             yesno = "x"
         else:
             span_start = answer_span_start + before
