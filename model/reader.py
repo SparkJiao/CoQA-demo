@@ -55,7 +55,12 @@ class QuACReader(DatasetReader):
         logger.info("Reading file at %s", file_path)
         with open(file_path) as dataset_file:
             dataset_json = json.load(dataset_file)
-            dataset = dataset_json['data']
+
+            dataset = list()
+            for i in range(20):
+                dataset.append(dataset_json["data"][i])
+
+            # dataset = dataset_json['data']
         logger.info("Reading the dataset")
         # for article in dataset:
         #     for paragraph_json in article['paragraphs']:
