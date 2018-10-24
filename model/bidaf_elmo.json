@@ -26,7 +26,7 @@
   "train_data_path": "https://nlp.stanford.edu/data/coqa/coqa-train-v1.0.json",
   "validation_data_path": "https://nlp.stanford.edu/data/coqa/coqa-dev-v1.0.json",
   "model": {
-    "type": "bidaf",
+    "type": "bidaf-on-coqa",
     "text_field_embedder": {
       "token_embedders": {
         "tokens": {
@@ -105,7 +105,7 @@
         "num_tokens"
       ]
     ],
-    "batch_size": 16
+    "batch_size": 8
   },
   "trainer": {
     "num_epochs": 20,
