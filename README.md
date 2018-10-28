@@ -5,7 +5,9 @@ The models are implemented based on allennlp, I created my own DatasetReader to 
 
 sreader.py and bidaf.json is the simple bidaf model.  
 
-bidaf_plus_dataset_reader.py and bidaf_plus.json is the bidaf++ w/2-ctx model.
+bidaf_plus_dataset_reader.py and bidaf_plus.json is the bidaf++ w/2-ctx model.  
+
+bidaf_elmo.json is the bidaf++ model with ELMo pretrained model.  
 
 reader.py and bidaf++.json is the bidaf++ model of allennlp running on QuAC and I have tried to modified it to run on CoQA but failed. I may try it later.
 
