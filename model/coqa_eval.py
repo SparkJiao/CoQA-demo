@@ -20,8 +20,9 @@ domain_mappings = {"mctest": "children_stories", "gutenberg": "literature", "rac
 
 class CoQAEvaluator():
 
-    def __init__(self, gold_file):
-        self.gold_data, self.id_to_source = CoQAEvaluator.gold_answers_to_dict(gold_file)
+    def __init__(self):
+        # self.gold_data, self.id_to_source = CoQAEvaluator.gold_answers_to_dict(gold_file)
+        pass
 
     @staticmethod
     def gold_answers_to_dict(gold_file):
@@ -103,6 +104,19 @@ class CoQAEvaluator():
         recall = 1.0 * num_same / len(gold_toks)
         f1 = (2 * precision * recall) / (precision + recall)
         return f1
+
+    def get_f1(self, best_span_string, answer_strings):
+        f1 = 0.0
+        for answer_string in answer_strings:
+            f1 = max(f1, self.compute_f1(answer_string, best_span_string))
+        return f1
+
+    def get_em(self, best_span_string, answer_strings):
+        em = 0.0
+        for answer_string in answer_strings:
+            em = max(em, self.compute_exact(answer_string, best_span_string))
+        return em
+
 
     @staticmethod
     def _compute_turn_score(a_gold_list, a_pred):

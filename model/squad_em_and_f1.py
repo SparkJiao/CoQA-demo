@@ -4,7 +4,7 @@ from overrides import overrides
 
 from allennlp.training.metrics.metric import Metric
 
-from
+from model.coqa_eval import CoQAEvaluator
 
 @Metric.register("coqa-metric")
 class SquadEmAndF1(Metric):
@@ -17,6 +17,7 @@ class SquadEmAndF1(Metric):
         self._total_em = 0.0
         self._total_f1 = 0.0
         self._count = 0
+        self._evaluator = CoQAEvaluator()
 
     @overrides
     def __call__(self, best_span_string, answer_strings):
@@ -26,14 +27,17 @@ class SquadEmAndF1(Metric):
         value : ``float``
             The value to average.
         """
-        exact_match = squad_eval.metric_max_over_ground_truths(
-                squad_eval.exact_match_score,
-                best_span_string,
-                answer_strings)
-        f1_score = squad_eval.metric_max_over_ground_truths(
-                squad_eval.f1_score,
-                best_span_string,
-                answer_strings)
+
+        exact_match = self._evaluator.get_em(best_span_string, answer_strings)
+        # exact_match = squad_eval.metric_max_over_ground_truths(
+        #         squad_eval.exact_match_score,
+        #         best_span_string,
+        #         answer_strings)
+        f1_score = self._evaluator.get_f1(best_span_string, answer_strings)
+        # f1_score = squad_eval.metric_max_over_ground_truths(
+        #         squad_eval.f1_score,
+        #         best_span_string,
+        #         answer_strings)
         self._total_em += exact_match
         self._total_f1 += f1_score
         self._count += 1
