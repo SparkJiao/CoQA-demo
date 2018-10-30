@@ -1,6 +1,7 @@
 {
   "dataset_reader": {
     "type": "coqa-squad-plus",
+    "lazy": true,
     "token_indexers": {
       "tokens": {
         "type": "single_id",
@@ -105,7 +106,8 @@
         "num_tokens"
       ]
     ],
-    "batch_size": 8
+    "batch_size": 8,
+    "max_instances_in_memory": 1000
   },
   "trainer": {
     "num_epochs": 20,

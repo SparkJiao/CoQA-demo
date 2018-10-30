@@ -81,6 +81,7 @@ class SquadReaderPlus(DatasetReader):
                 answer = paragraph_json["answers"][ind]['span_text'].strip().replace("\n", "")
                 start = paragraph_json["answers"][ind]['span_start'] + before
                 end = start + len(answer)
+                answer = paragraph_json["answer"][ind]['input_text'].strip().replace("\n", "")
 
                 # debug 10.15 21:20
                 if answer.lower() == "unknown":
@@ -109,6 +110,7 @@ class SquadReaderPlus(DatasetReader):
                         before = self.get_front_blanks(tmp, padding)
                         start = additional_answers[key][ind]["span_start"] + before
                         end = start + len(answer)
+                        answer = additional_answers[key][ind]["input_text"].strip().replace("\n", "")
 
                         # debug 10.15 21:20
                         if answer.lower() == "unknown":
